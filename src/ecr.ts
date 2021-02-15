@@ -17,6 +17,7 @@ export async function login(ecrClient: aws.ECR): Promise<string> {
     authTokenResponse.authorizationData[0].authorizationToken === undefined ||
     authTokenResponse.authorizationData[0].proxyEndpoint === undefined
   ) {
+    core.setFailed('Error getting ECR login token, incomplete or no data returned');
     throw new Error(
       'Error getting ECR login token, incomplete or no data returned'
     );
