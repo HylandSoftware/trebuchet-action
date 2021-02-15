@@ -14,7 +14,7 @@ export class Push {
     const registryUri = await ecrHelper.login(this.ecrClient);
     await this.createRepository(this.repository, false);
 
-    core.debug(`pushing ${this.repository}:${this.tag} to ECR`);
+    core.info(`pushing ${this.repository}:${this.tag} to ECR`);
     await docker.push(registryUri, this.repository, this.tag);
     await docker.logout(registryUri);
     return '';

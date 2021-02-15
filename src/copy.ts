@@ -51,10 +51,10 @@ export class Copy {
       .promise();
 
     if (assumedRole.Credentials === undefined) {
-      throw new Error(`Role assumtpion failed ${assumedRole.$response.error}`);
+      throw new Error(`Role assumption failed ${assumedRole.$response.error}`);
     }
 
-    core.debug(`role assumtpion response: ${assumedRole.AssumedRoleUser?.Arn}`);
+    core.debug(`role assumption response: ${assumedRole.AssumedRoleUser?.Arn}`);
     const ecrPullClient = new aws.ECR({
       credentials: {
         accessKeyId: assumedRole.Credentials?.AccessKeyId,
