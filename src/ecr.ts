@@ -2,10 +2,16 @@ import * as aws from 'aws-sdk';
 import * as core from '@actions/core';
 import * as docker from './docker';
 
-export async function login(ecrClient: aws.ECR): Promise<string> {
+export async function login(
+  ecrClient: aws.ECR,
+  accountId?: string
+): Promise<string> {
   core.debug(`getting ECR auth token`);
 
   const authTokenRequest: aws.ECR.GetAuthorizationTokenRequest = {};
+  if (accountId !== undefined) {
+    authTokenRequest.registryIds = [accountId];
+  }
   const authTokenResponse = await ecrClient
     .getAuthorizationToken(authTokenRequest)
     .promise();
@@ -17,9 +23,6 @@ export async function login(ecrClient: aws.ECR): Promise<string> {
     authTokenResponse.authorizationData[0].authorizationToken === undefined ||
     authTokenResponse.authorizationData[0].proxyEndpoint === undefined
   ) {
-    core.setFailed(
-      'Error getting ECR login token, incomplete or no data returned'
-    );
     throw new Error(
       'Error getting ECR login token, incomplete or no data returned'
     );

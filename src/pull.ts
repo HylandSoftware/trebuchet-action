@@ -13,7 +13,7 @@ export class Pull {
   ) {}
 
   async execute(): Promise<string> {
-    const registryUri = await ecrHelper.login(this.ecrClient);
+    const registryUri = await ecrHelper.login(this.ecrClient, this.accountId);
 
     core.debug(`pulling ${this.repository}:${this.tag} from ECR`);
     await docker.pull(registryUri, this.repository, this.tag);

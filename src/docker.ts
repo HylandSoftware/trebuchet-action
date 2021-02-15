@@ -66,7 +66,6 @@ async function dockerExecute(
   if (exitCode !== 0) {
     core.debug(`Output: ${stdout}`);
     core.debug(`Standard Error: ${stderr}`);
-    core.setFailed(`Could not login: ${stdout} ${stderr}`);
     throw new Error(`Could not login: ${stdout} ${stderr}`);
   }
 }
