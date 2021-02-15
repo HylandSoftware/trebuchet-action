@@ -37,4 +37,4 @@ jobs:
           source-account-id: ${{ secrets.SOURCE_ACCOUNT_ID }}
           source-account-role: ${{ secrets.SOURCE_ROLE }}
           repository: ${{ secrets.REPOSITORY }}
-          repository: ${{ secrets.TAG }}
+          tag: ${{ secrets.TAG }}
