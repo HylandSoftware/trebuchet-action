@@ -38,3 +38,36 @@ jobs:
           source-role-arn: ${{ secrets.SOURCE_ROLE }}
           repository: ${{ secrets.REPOSITORY }}
           tag: ${{ secrets.TAG }}
+
+  release:
+    runs-on: ubuntu-latest
+    needs: [build, test]
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+
+    - name: Release
+      uses: cycjimmy/semantic-release-action@v2
+      with:
+        extra_plugins: |
+          @semantic-release/exec
+          @semantic-release/changelog
+          @semantic-release/git
+        branches: |
+          [
+            "+([0-9])?(.{+([0-9]),x}).x",
+            "main",
+            "next",
+            "next-major",
+            {
+              "name": "beta",
+              "prerelease": true
+            },
+            {
+              "name": "alpha",
+              "prerelease": true
+            }
+          ]
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
