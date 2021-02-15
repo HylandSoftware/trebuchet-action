@@ -39,7 +39,6 @@ export class Copy {
     // push
     const push = new Push(this.ecrClient, this.repository, this.tag);
     await push.execute();
-    // log out
   }
 
   private async PullSourcePackage(sts: aws.STS): Promise<void> {

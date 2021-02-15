@@ -4,14 +4,14 @@ author: 'HylandSoftware'
 inputs:
   action: 
     required: true
-    description: 'The command to execute, `push` or `pull`'
+    description: 'The command to execute, `push` or `copy` are the currently supported actions.'
   region: 
     required: false
     description: 'The AWS region to execute against.  It will use this property or pull from the AWS_DEFAULT_REGION Environment variable.'
     default: ''
   source-account-id:
     required: false
-    description: 'The account id of the source AWS account for a pull / copy, if different then the default account id.'
+    description: 'The account id of the source AWS account for a pull / copy, if different than the default account id.'
     default: ''
   source-role-arn:
     required: false
