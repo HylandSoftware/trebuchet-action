@@ -17,10 +17,20 @@ async function run(): Promise<void> {
 
     const ecrClient = new aws.ECR();
 
+    if (repository === undefined || repository.length === 0){
+      core.setFailed('Repository parameter is missing');
+      return;
+    }
+
+    if (tag === undefined || tag.length === 0){
+      core.setFailed('Tag parameter is missing');
+      return;
+    }
+
     switch (action) {
       case 'push': {
         const push = new Push(ecrClient, repository, tag);
-        push.execute();
+        await push.execute();
         break;
       }
       //case 'pull': {
@@ -36,7 +46,7 @@ async function run(): Promise<void> {
           repository,
           tag
         );
-        promote.execute();
+        await promote.execute();
         break;
       }
       default: {

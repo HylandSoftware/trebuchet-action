@@ -19,6 +19,16 @@ export class Copy {
     core.debug(`current identity: ${JSON.stringify(currentIdentity)}`);
     const originalRole: string = currentIdentity.Arn || '';
 
+    if (this.sourceAccountId === undefined || this.sourceAccountId.length === 0){
+      core.setFailed('Source account id is missing');
+      return;
+    }
+
+    if (this.sourceAccountRole === undefined || this.sourceAccountRole.length === 0){
+        core.setFailed('Source role arn is missing');
+        return;
+    }
+
     const response = await sts
       .assumeRole({
         RoleArn: this.sourceAccountRole,
