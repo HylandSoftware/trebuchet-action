@@ -35,6 +35,6 @@ jobs:
         with:
           action: copy
           source-account-id: ${{ secrets.SOURCE_ACCOUNT_ID }}
-          source-account-role: ${{ secrets.SOURCE_ROLE }}
+          source-role-arn: ${{ secrets.SOURCE_ROLE }}
           repository: ${{ secrets.REPOSITORY }}
           tag: ${{ secrets.TAG }}
