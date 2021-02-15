@@ -33,10 +33,13 @@ export async function login(
     'base64'
   ).toString('utf-8');
   const split = authToken.split(':', 2);
+  core.setSecret(authToken);
+  core.setSecret(split[1]);
   const proxyEndpoint = authTokenResponse.authorizationData[0].proxyEndpoint;
   const registryUri = proxyEndpoint.replace(/^https?:\/\//, '');
 
   core.debug(`logging into ECR with docker: ${registryUri}`);
+
   await docker.login(split[0], split[1], registryUri);
 
   return registryUri;

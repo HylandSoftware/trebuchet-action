@@ -50,17 +50,18 @@ export class Copy {
       })
       .promise();
 
-    if (assumedRole.Credentials === undefined) {
+    if (assumedRole === undefined || assumedRole.Credentials === undefined) {
       throw new Error(`Role assumption failed ${assumedRole.$response.error}`);
     }
 
     core.debug(`role assumption response: ${assumedRole.AssumedRoleUser?.Arn}`);
+    this.maskSecrets(assumedRole);
     const ecrPullClient = new aws.ECR({
       credentials: {
-        accessKeyId: assumedRole.Credentials?.AccessKeyId,
-        expireTime: assumedRole.Credentials?.Expiration,
-        secretAccessKey: assumedRole.Credentials?.SecretAccessKey,
-        sessionToken: assumedRole.Credentials?.SessionToken,
+        accessKeyId: assumedRole.Credentials.AccessKeyId,
+        expireTime: assumedRole.Credentials.Expiration,
+        secretAccessKey: assumedRole.Credentials.SecretAccessKey,
+        sessionToken: assumedRole.Credentials.SessionToken,
       },
     });
 
@@ -73,5 +74,11 @@ export class Copy {
     );
 
     await pull.execute();
+  }
+
+  private maskSecrets(assumedRole: aws.STS.AssumeRoleResponse): void {
+    core.setSecret(assumedRole.Credentials!.AccessKeyId);
+    core.setSecret(assumedRole.Credentials!.SecretAccessKey);
+    core.setSecret(assumedRole.Credentials!.SessionToken);
   }
 }
