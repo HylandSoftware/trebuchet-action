@@ -17,12 +17,12 @@ async function run(): Promise<void> {
 
     const ecrClient = new aws.ECR();
 
-    if (repository === undefined || repository.length === 0){
+    if (repository === undefined || repository.length === 0) {
       core.setFailed('Repository parameter is missing');
       return;
     }
 
-    if (tag === undefined || tag.length === 0){
+    if (tag === undefined || tag.length === 0) {
       core.setFailed('Tag parameter is missing');
       return;
     }
