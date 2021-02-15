@@ -14,8 +14,13 @@ export class Pull {
 
   async execute(): Promise<string> {
     const registryUri = await ecrHelper.login(this.ecrClient, this.accountId);
-
-    core.info(`pulling ${this.repository}:${this.tag} from ECR`);
+    if (this.accountId === undefined) {
+      core.info(`pulling ${this.repository}:${this.tag} from default ECR`);
+    } else {
+      core.info(
+        `pulling ${this.repository}:${this.tag} from ${this.accountId} ECR`
+      );
+    }
     await docker.pull(registryUri, this.repository, this.tag);
     if (this.stripRegistry === true) {
       docker.stripRegistry(registryUri, this.repository, this.tag);
