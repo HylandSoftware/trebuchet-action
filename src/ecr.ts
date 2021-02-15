@@ -6,7 +6,7 @@ export async function login(
   ecrClient: aws.ECR,
   accountId?: string
 ): Promise<string> {
-  core.debug(`getting ECR auth token`);
+  core.debug(`getting ECR auth token with account id ${accountId}`);
 
   const authTokenRequest: aws.ECR.GetAuthorizationTokenRequest = {};
   if (accountId !== undefined) {

@@ -17,7 +17,6 @@ export class Copy {
     const sts = new aws.STS();
     const currentIdentity = await sts.getCallerIdentity().promise();
     core.debug(`current identity: ${JSON.stringify(currentIdentity)}`);
-    const originalRole: string = currentIdentity.Arn || '';
 
     if (
       this.sourceAccountId === undefined ||
@@ -35,17 +34,38 @@ export class Copy {
       return;
     }
 
-    const response = await sts
+    await this.PullSourcePackage(sts);
+
+    // push
+    const push = new Push(this.ecrClient, this.repository, this.tag);
+    await push.execute();
+    // log out
+  }
+
+  private async PullSourcePackage(sts: aws.STS): Promise<void> {
+    const assumedRole = await sts
       .assumeRole({
         RoleArn: this.sourceAccountRole,
         RoleSessionName: 'awssdk-github-action',
       })
       .promise();
-    core.debug(`role assumtpion response: ${JSON.stringify(response)}`);
 
-    // pull
+    if (assumedRole.Credentials === undefined) {
+      throw new Error(`Role assumtpion failed ${assumedRole.$response.error}`);
+    }
+
+    core.debug(`role assumtpion response: ${assumedRole.AssumedRoleUser?.Arn}`);
+    const ecrPullClient = new aws.ECR({
+      credentials: {
+        accessKeyId: assumedRole.Credentials?.AccessKeyId,
+        expireTime: assumedRole.Credentials?.Expiration,
+        secretAccessKey: assumedRole.Credentials?.SecretAccessKey,
+        sessionToken: assumedRole.Credentials?.SessionToken,
+      },
+    });
+
     const pull = new Pull(
-      this.ecrClient,
+      ecrPullClient,
       this.repository,
       this.tag,
       this.sourceAccountId,
@@ -53,18 +73,5 @@ export class Copy {
     );
 
     await pull.execute();
-
-    // switch role back?
-    // log in to current environment
-    await sts
-      .assumeRole({
-        RoleArn: originalRole,
-        RoleSessionName: 'awssdk-github-action',
-      })
-      .promise();
-    // push
-    const push = new Push(this.ecrClient, this.repository, this.tag);
-    await push.execute();
-    // log out
   }
 }
