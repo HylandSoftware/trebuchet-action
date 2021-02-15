@@ -1,0 +1,27 @@
+import * as aws from 'aws-sdk';
+import * as core from '@actions/core';
+import * as docker from './docker';
+import * as ecrHelper from './ecr';
+
+export class Pull {
+  constructor(
+    readonly ecrClient: aws.ECR,
+    readonly repository: string,
+    readonly tag: string,
+    readonly accountId?: string,
+    readonly stripRegistry?: boolean
+  ) {}
+
+  async execute(): Promise<string> {
+    const registryUri = await ecrHelper.login(this.ecrClient);
+
+    core.debug(`pushing ${this.repository}:${this.tag} to ECR`);
+    await docker.pull(registryUri, this.repository, this.tag);
+    if (this.stripRegistry === true) {
+      docker.stripRegistry(registryUri, this.repository, this.tag);
+    }
+
+    await docker.logout(registryUri);
+    return registryUri;
+  }
+}

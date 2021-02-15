@@ -1,11 +1,24 @@
-name: 'Your name here'
-description: 'Provide a description here'
-author: 'Your name or organization here'
+name: 'Trebuchet-Action'
+description: 'The purpose of Trebuchet is to improve the quality of life for pushing Docker images to Amazon Elastic Container Registry (ECR).  The action assumes that you've set up your AWS credentials using the AWS credentials action.'
+author: 'HylandSoftware'
 inputs:
-  milliseconds: # change this
+  action: 
     required: true
-    description: 'input description here'
-    default: 'default value if applicable'
+    description: 'the command to execute, `push` or `pull`'
+  region: 
+    required: false
+    description: 'The AWS region to execute against.  It will use this property or pull from the AWS_DEFAULT_REGION Environment variable'
+    default: ''
+  strip: 
+    required: false
+    description: 'When set, it removes all ECR-specific elements from the image name. For example, 112233445566.dkr.ecr.us-east-1.amazonaws.com/hello-world:latest would be pulled as hello-world:latest.'
+    defaults: false
+  repository: 
+    required: true
+    description: the name of the image in either the local docker or remote registry
+  tag: 
+    required: true
+    description: the tag of the image to use when performing the action
 runs:
   using: 'node12'
   main: 'dist/index.js'

@@ -1,19 +1,40 @@
-import * as core from '@actions/core'
-import {wait} from './wait'
+import * as aws from 'aws-sdk';
+import * as core from '@actions/core';
+import { Push } from './push';
+import { Promote } from './promote';
 
 async function run(): Promise<void> {
   try {
-    const ms: string = core.getInput('milliseconds')
-    core.debug(`Waiting ${ms} milliseconds ...`) // debug is only output if you set the secret `ACTIONS_RUNNER_DEBUG` to true
+    //const strip: boolean = (core.getInput("strip", { required: false }) || "false") === "true";
+    //const region: string = core.getInput('region');
 
-    core.debug(new Date().toTimeString())
-    await wait(parseInt(ms, 10))
-    core.debug(new Date().toTimeString())
+    const action: string = core.getInput('action');
+    const repository: string = core.getInput('repository');
+    const tag: string = core.getInput('tag');
 
-    core.setOutput('time', new Date().toTimeString())
+    const ecrClient = new aws.ECR();
+
+    switch (action) {
+      case 'push': {
+        const push = new Push(ecrClient, repository, tag);
+        push.execute();
+        break;
+      }
+      case 'promote': {
+        const promote = new Promote(ecrClient, '', '', '', repository, tag);
+        promote.execute();
+        break;
+      }
+      default: {
+        core.setFailed(
+          `Unknown action ${action}.  Types 'pull' and 'promote' are supported.`
+        );
+        break;
+      }
+    }
   } catch (error) {
-    core.setFailed(error.message)
+    core.setFailed(error.message);
   }
 }
 
-run()
+run();

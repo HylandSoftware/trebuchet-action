@@ -25,7 +25,11 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
-    "@actions/core": "^1.2.6"
+    "@actions/core": "^1.2.6",
+    "@actions/exec": "^1.0.4",
+    "aws-sdk": "^2.843.0",
+    "dockerode": "^3.2.1",
+    "whatwg-url": "^8.4.0"
   },
   "devDependencies": {
     "@types/jest": "^26.0.20",
