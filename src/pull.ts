@@ -15,7 +15,7 @@ export class Pull {
   async execute(): Promise<string> {
     const registryUri = await ecrHelper.login(this.ecrClient);
 
-    core.debug(`pushing ${this.repository}:${this.tag} to ECR`);
+    core.debug(`pulling ${this.repository}:${this.tag} from ECR`);
     await docker.pull(registryUri, this.repository, this.tag);
     if (this.stripRegistry === true) {
       docker.stripRegistry(registryUri, this.repository, this.tag);
