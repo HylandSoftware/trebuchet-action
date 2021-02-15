@@ -7,15 +7,19 @@ inputs:
     description: 'the command to execute, `push` or `pull`'
   region: 
     required: false
-    description: 'The AWS region to execute against.  It will use this property or pull from the AWS_DEFAULT_REGION Environment variable'
+    description: 'The AWS region to execute against.  It will use this property or pull from the AWS_DEFAULT_REGION Environment variable.'
     default: ''
-  strip: 
+  source-account-id:
     required: false
-    description: 'When set, it removes all ECR-specific elements from the image name. For example, 112233445566.dkr.ecr.us-east-1.amazonaws.com/hello-world:latest would be pulled as hello-world:latest.'
-    defaults: false
+    description: 'The account id of the source AWS account for a pull / copy, if different then the default account id.'
+    default: ''
+  source-role-arn:
+    required: false
+    description: 'The role arn to use when pulling the image from ECR.  Only needed when the source role is different from the default environment credentials.'
+    default: ''
   repository: 
     required: true
-    description: the name of the image in either the local docker or remote registry
+    description: the name of the image in either the local docker or remote registry.
   tag: 
     required: true
     description: the tag of the image to use when performing the action

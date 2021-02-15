@@ -1,7 +1,8 @@
 import * as aws from 'aws-sdk';
 import * as core from '@actions/core';
 import { Push } from './push';
-import { Promote } from './promote';
+import { Copy } from './copy';
+import { Pull } from './pull';
 
 async function run(): Promise<void> {
   try {
@@ -11,6 +12,8 @@ async function run(): Promise<void> {
     const action: string = core.getInput('action');
     const repository: string = core.getInput('repository');
     const tag: string = core.getInput('tag');
+    const sourceAccountId = core.getInput('source-account-id');
+    const sourceRoleArn = core.getInput('source-role-arn');
 
     const ecrClient = new aws.ECR();
 
@@ -20,14 +23,19 @@ async function run(): Promise<void> {
         push.execute();
         break;
       }
-      case 'promote': {
-        const promote = new Promote(ecrClient, '', '', '', repository, tag);
+      //case 'pull': {
+      //  const promote = new Pull(ecrClient, repository, tag, sourceAccountId, true);
+      //  promote.execute();
+      //  break;
+      //}
+      case 'copy': {
+        const promote = new Copy(ecrClient, sourceRoleArn, sourceAccountId, repository, tag);
         promote.execute();
         break;
       }
       default: {
         core.setFailed(
-          `Unknown action ${action}.  Types 'pull' and 'promote' are supported.`
+          `Unknown action ${action}.  Types 'push' and 'copy' are supported.`
         );
         break;
       }

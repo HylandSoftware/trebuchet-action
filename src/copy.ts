@@ -3,18 +3,17 @@ import { Pull } from './pull';
 import { Push } from './push';
 import * as core from '@actions/core';
 
-export class Promote {
+export class Copy {
   constructor(
     readonly ecrClient: aws.ECR,
-    readonly lowerAccountRole: string,
-    readonly lowerAccountId: string,
-    readonly currentAccountId: string,
+    readonly sourceAccountRole: string,
+    readonly sourceAccountId: string,
     readonly repository: string,
     readonly tag: string
   ) {}
 
   async execute(): Promise<void> {
-    // role switch && log in to lower environment
+    // role switch && log in to source environment
     const sts = new aws.STS();
     const currentIdentity = await sts.getCallerIdentity().promise();
     core.debug(`current identity: ${JSON.stringify(currentIdentity)}`);
@@ -22,7 +21,7 @@ export class Promote {
 
     const response = await sts
       .assumeRole({
-        RoleArn: this.lowerAccountRole,
+        RoleArn: this.sourceAccountRole,
         RoleSessionName: 'awssdk-github-action',
       })
       .promise();
@@ -33,7 +32,7 @@ export class Promote {
       this.ecrClient,
       this.repository,
       this.tag,
-      this.lowerAccountId,
+      this.sourceAccountId,
       true
     );
 
