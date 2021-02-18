@@ -49,6 +49,7 @@ jobs:
 
     - name: Release
       uses: cycjimmy/semantic-release-action@v2
+      id: semantic-release
       with:
         extra_plugins: |
           @semantic-release/exec
@@ -71,3 +72,13 @@ jobs:
           ]
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Move major version tag
+      if: steps.semantic-release.outputs.new_release_published == 'true'
+      env:
+        VERION_TAG: v${{steps.semantic-release.outputs.new_release_major_version}}
+      run: |
+        git tag -d ${{ env.VERION_TAG }}
+        git push origin :${{ env.VERION_TAG }}
+        git tag ${{ env.VERION_TAG }}
+        git push origin ${{ env.VERION_TAG }}
