@@ -14,7 +14,7 @@ async function run(): Promise<void> {
     const tag: string = core.getInput('tag');
     const sourceAccountId = core.getInput('source-account-id');
     const sourceRoleArn = core.getInput('source-role-arn');
-
+    const immutable: boolean = (core.getInput('immutable', { required: false }) || 'false') === 'true';
     const ecrClient = new aws.ECR();
 
     if (repository === undefined || repository.length === 0) {
@@ -29,7 +29,7 @@ async function run(): Promise<void> {
 
     switch (action) {
       case 'push': {
-        const push = new Push(ecrClient, repository, tag);
+        const push = new Push(ecrClient, repository, tag, immutable);
         await push.execute();
         break;
       }
@@ -44,7 +44,8 @@ async function run(): Promise<void> {
           sourceRoleArn,
           sourceAccountId,
           repository,
-          tag
+          tag,
+          immutable
         );
         await promote.execute();
         break;

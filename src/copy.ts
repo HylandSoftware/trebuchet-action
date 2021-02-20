@@ -9,7 +9,8 @@ export class Copy {
     readonly sourceAccountRole: string,
     readonly sourceAccountId: string,
     readonly repository: string,
-    readonly tag: string
+    readonly tag: string,
+    readonly immutable: boolean
   ) {}
 
   async execute(): Promise<void> {
@@ -37,7 +38,7 @@ export class Copy {
     await this.PullSourcePackage(sts);
 
     // push
-    const push = new Push(this.ecrClient, this.repository, this.tag);
+    const push = new Push(this.ecrClient, this.repository, this.tag, this.immutable);
     await push.execute();
   }
 
