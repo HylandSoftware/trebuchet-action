@@ -27,7 +27,7 @@
   "dependencies": {
     "@actions/core": "^1.2.6",
     "@actions/exec": "^1.0.4",
-    "aws-sdk": "^2.844.0",
+    "aws-sdk": "^2.848.0",
     "dockerode": "^3.2.1",
     "whatwg-url": "^8.4.0"
   },
