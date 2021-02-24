@@ -7,12 +7,13 @@ export class Push {
   constructor(
     readonly ecrClient: aws.ECR,
     readonly repository: string,
-    readonly tag: string
+    readonly tag: string,
+    readonly immutable: boolean
   ) {}
 
   async execute(): Promise<string> {
     const registryUri = await ecrHelper.login(this.ecrClient);
-    await this.createRepository(this.repository, false);
+    await this.createRepository(this.repository, this.immutable);
 
     core.info(`pushing ${this.repository}:${this.tag} to default ECR`);
     await docker.push(registryUri, this.repository, this.tag);

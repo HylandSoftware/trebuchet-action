@@ -23,6 +23,10 @@ inputs:
   tag: 
     required: true
     description: 'The tag of the image to use when performing the action'
+  immutable:
+    required: false
+    description: 'Whether the repository should be created as IMMUTABLE (if not already existing)'
+    default: 'false'
 runs:
   using: 'node12'
   main: 'dist/index.js'
