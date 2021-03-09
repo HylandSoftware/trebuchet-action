@@ -28,10 +28,11 @@ The purpose of Trebuchet is to improve the quality of life for pushing Docker im
 ```
 
 | Paramater | Required | Default | Description |
+| ---------- | ------- | ------- | ----------- |
 | action | true | n/a | The command to execute, `push` or `copy` are the currently supported actions. |
-| repository | true | n/a | The name of the image in either the local docker or remote registry.
-| tag | true | The tag of the image to use when performing the action
+| repository | true | n/a | The name of the image in either the local docker or remote registry. |
+| tag | true | n/a | The tag of the image to use when performing the action. |
 | region | false | ENV_VAR | The AWS region to execute against.  It will use this property or pull from the AWS_DEFAULT_REGION Environment variable. |
-| source-account-id | false | CURRENT_ACCOUNT | The account id of the source AWS account for a pull / copy, if different than the default account id.
-| source-role-arn | false  | CURRENT_ACCOUNT | The role arn to use when pulling the image from ECR.  Only needed when the source role is different from the default environment credentials.
+| source-account-id | false | CURRENT_ACCOUNT | The account id of the source AWS account for a pull / copy, if different than the default account id. |
+| source-role-arn | false  | CURRENT_ACCOUNT | The role arn to use when pulling the image from ECR.  Only needed when the source role is different from the default environment credentials. |
 | immutable | false | false | Whether the repository should be created as IMMUTABLE (if not already existing) |
