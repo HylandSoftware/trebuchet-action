@@ -38,7 +38,12 @@ export class Copy {
     await this.PullSourcePackage(sts);
 
     // push
-    const push = new Push(this.ecrClient, this.repository, this.tag, this.immutable);
+    const push = new Push(
+      this.ecrClient,
+      this.repository,
+      this.tag,
+      this.immutable
+    );
     await push.execute();
   }
 
