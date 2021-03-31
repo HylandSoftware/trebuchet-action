@@ -27,6 +27,10 @@ inputs:
     required: false
     description: 'Whether the repository should be created as IMMUTABLE (if not already existing)'
     default: 'false'
+outputs:
+  registry:
+    description: 'The URI of the ECR registry i.e. aws_account_id.dkr.ecr.region.amazonaws.com'
+
 runs:
   using: 'node12'
   main: 'dist/index.js'

@@ -13,10 +13,12 @@ export class Push {
 
   async execute(): Promise<string> {
     const registryUri = await ecrHelper.login(this.ecrClient);
-    await this.createRepository(this.repository, this.immutable);
+    core.setOutput('registry', registryUri);
 
+    await this.createRepository(this.repository, this.immutable);
     core.info(`pushing ${this.repository}:${this.tag} to default ECR`);
     await docker.push(registryUri, this.repository, this.tag);
+
     await docker.logout(registryUri);
     return '';
   }
