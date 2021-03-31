@@ -1,3 +1,10 @@
+# [1.2.0](https://github.com/HylandSoftware/trebuchet-action/compare/v1.1.0...v1.2.0) (2021-03-31)
+
+
+### Features
+
+* update minor version for new features ([de0a057](https://github.com/HylandSoftware/trebuchet-action/commit/de0a05766a2ca7a0e4c149f5d2d6df4091d12227))
+
 # [1.1.0](https://github.com/HylandSoftware/trebuchet-action/compare/v1.0.0...v1.1.0) (2021-03-09)
 
 
