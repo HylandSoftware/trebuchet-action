@@ -18,7 +18,7 @@ The purpose of Trebuchet is to improve the quality of life for pushing Docker im
           mask-aws-account-id: false
           role-duration-seconds: 900
 
-      - uses: HylandSoftware/trebuchet-action@1.0.0
+      - uses: HylandSoftware/trebuchet-action@v1
         with:
           action: copy
           source-account-id: ${{ secrets.SOURCE_ACCOUNT_ID }}
