@@ -29,7 +29,7 @@
     "@actions/exec": "^1.1.0",
     "aws-sdk": "^2.936.0",
     "dockerode": "^3.3.0",
-    "whatwg-url": "^8.6.0"
+    "whatwg-url": "^9.0.0"
   },
   "devDependencies": {
     "@types/jest": "^26.0.23",
