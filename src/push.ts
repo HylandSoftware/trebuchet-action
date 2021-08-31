@@ -47,7 +47,9 @@ export class Push {
         );
         await this.ecrClient.createRepository(createRepoOptions).promise();
       } else {
-        core.setFailed(`Error testing for repository existence: ${err.message as string}`);
+        core.setFailed(
+          `Error testing for repository existence: ${err.message}`
+        );
       }
     }
   }
