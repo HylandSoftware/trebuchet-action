@@ -1,7 +1,7 @@
-import { Pull } from './pull';
-import { Push } from './push';
 import * as aws from 'aws-sdk';
 import * as core from '@actions/core';
+import { Pull } from './pull';
+import { Push } from './push';
 
 export class Copy {
   constructor(
