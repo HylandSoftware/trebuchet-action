@@ -1,7 +1,7 @@
 import * as aws from 'aws-sdk';
 import * as core from '@actions/core';
-import { Push } from './push';
 import { Copy } from './copy';
+import { Push } from './push';
 // import { Pull } from './pull';
 
 async function run(): Promise<void> {
