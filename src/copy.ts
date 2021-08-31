@@ -1,5 +1,5 @@
-import * as aws from 'aws-sdk';
 import * as core from '@actions/core';
+import * as aws from 'aws-sdk';
 import { Pull } from './pull';
 import { Push } from './push';
 

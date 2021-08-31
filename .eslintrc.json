@@ -1,5 +1,5 @@
 {
-    "plugins": ["jest", "@typescript-eslint"],
+    "plugins": ["jest", "@typescript-eslint", "i18n-text"],
     "extends": ["plugin:github/recommended"],
     "parser": "@typescript-eslint/parser",
     "parserOptions": {
@@ -9,8 +9,10 @@
     },
     "rules": {
       "eslint-comments/no-use": "off",
+      "i18n-text/no-en": 0, 
       "import/no-namespace": "off",
       "no-unused-vars": "off",
+
       "@typescript-eslint/no-unused-vars": "error",
       "@typescript-eslint/explicit-member-accessibility": ["error", {"accessibility": "no-public"}],
       "@typescript-eslint/no-require-imports": "error",
@@ -30,7 +32,6 @@
       "@typescript-eslint/no-misused-new": "error",
       "@typescript-eslint/no-namespace": "error",
       "@typescript-eslint/no-non-null-assertion": "warn",
-      "@typescript-eslint/no-string-literal": "warn",
       "@typescript-eslint/no-unnecessary-qualifier": "error",
       "@typescript-eslint/no-unnecessary-type-assertion": "error",
       "@typescript-eslint/no-useless-constructor": "error",
