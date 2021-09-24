@@ -34,7 +34,7 @@ export class Push {
           repositoryNames: [repository],
         })
         .promise();
-    } catch (err) {
+    } catch (err: any) {
       if (err.code === 'RepositoryNotFoundException') {
         const createRepoOptions: aws.ECR.Types.CreateRepositoryRequest = {
           repositoryName: repository,

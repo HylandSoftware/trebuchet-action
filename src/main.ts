@@ -58,7 +58,7 @@ async function run(): Promise<void> {
         break;
       }
     }
-  } catch (error) {
+  } catch (error: any) {
     core.setFailed(error.message);
   }
 }
