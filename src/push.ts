@@ -2,7 +2,6 @@ import * as aws from 'aws-sdk';
 import * as core from '@actions/core';
 import * as docker from './docker';
 import * as ecrHelper from './ecr';
-
 export class Push {
   constructor(
     readonly ecrClient: aws.ECR,
@@ -34,8 +33,8 @@ export class Push {
           repositoryNames: [repository],
         })
         .promise();
-    } catch (err: any) {
-      if (err.code === 'RepositoryNotFoundException') {
+    } catch (err) {
+      if ((err as aws.AWSError).code === 'RepositoryNotFoundException') {
         const createRepoOptions: aws.ECR.Types.CreateRepositoryRequest = {
           repositoryName: repository,
           imageTagMutability: immutable ? 'IMMUTABLE' : 'MUTABLE',
@@ -48,7 +47,9 @@ export class Push {
         await this.ecrClient.createRepository(createRepoOptions).promise();
       } else {
         core.setFailed(
-          `Error testing for repository existence: ${err.message}`
+          `Error testing for repository existence: ${
+            (err as aws.AWSError).message
+          }`
         );
       }
     }

@@ -58,8 +58,10 @@ async function run(): Promise<void> {
         break;
       }
     }
-  } catch (error: any) {
-    core.setFailed(error.message);
+  } catch (error) {
+    if (error instanceof Error) {
+      core.setFailed(error.message);
+    }
   }
 }
 
