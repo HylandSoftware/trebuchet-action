@@ -34,7 +34,10 @@ export class Push {
         })
         .promise();
     } catch (err) {
-      if ((err as aws.AWSError).code === 'RepositoryNotFoundException') {
+      const e = err as aws.AWSError;
+      if (!e.code) {
+        core.setFailed(`Action failed with error ${e}`);
+      } else if (e.code === 'RepositoryNotFoundException') {
         const createRepoOptions: aws.ECR.Types.CreateRepositoryRequest = {
           repositoryName: repository,
           imageTagMutability: immutable ? 'IMMUTABLE' : 'MUTABLE',
@@ -46,11 +49,7 @@ export class Push {
         );
         await this.ecrClient.createRepository(createRepoOptions).promise();
       } else {
-        core.setFailed(
-          `Error testing for repository existence: ${
-            (err as aws.AWSError).message
-          }`
-        );
+        core.setFailed(`Error testing for repository existence: ${e.message}`);
       }
     }
   }
