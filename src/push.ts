@@ -35,21 +35,27 @@ export class Push {
         .promise();
     } catch (err) {
       const e = err as aws.AWSError;
-      if (!e.code) {
-        core.setFailed(`Action failed with error ${e}`);
-      } else if (e.code === 'RepositoryNotFoundException') {
-        const createRepoOptions: aws.ECR.Types.CreateRepositoryRequest = {
-          repositoryName: repository,
-          imageTagMutability: immutable ? 'IMMUTABLE' : 'MUTABLE',
-        };
-        core.debug(
-          `Repository doesn't exist, creating with ${JSON.stringify(
-            createRepoOptions
-          )}`
-        );
-        await this.ecrClient.createRepository(createRepoOptions).promise();
+      if (e) {
+        if (e.code === 'RepositoryNotFoundException') {
+          const createRepoOptions: aws.ECR.Types.CreateRepositoryRequest = {
+            repositoryName: repository,
+            imageTagMutability: immutable ? 'IMMUTABLE' : 'MUTABLE',
+          };
+          core.debug(
+            `Repository doesn't exist, creating with ${JSON.stringify(
+              createRepoOptions
+            )}`
+          );
+          await this.ecrClient.createRepository(createRepoOptions).promise();
+        } else {
+          core.setFailed(
+            `Error testing for repository existence: ${e.message}`
+          );
+        }
+      } else if (err instanceof Error) {
+        core.setFailed(`Error with create repository: ${err.message}`);
       } else {
-        core.setFailed(`Error testing for repository existence: ${e.message}`);
+        core.setFailed(`Unknown error with create repository: ${err}`)
       }
     }
   }
