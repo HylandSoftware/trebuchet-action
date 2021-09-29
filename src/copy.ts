@@ -82,8 +82,10 @@ export class Copy {
   }
 
   private maskSecrets(assumedRole: aws.STS.AssumeRoleResponse): void {
-    core.setSecret(assumedRole.Credentials!.AccessKeyId);
-    core.setSecret(assumedRole.Credentials!.SecretAccessKey);
-    core.setSecret(assumedRole.Credentials!.SessionToken);
+    if (assumedRole.Credentials) {
+      core.setSecret(assumedRole.Credentials.AccessKeyId);
+      core.setSecret(assumedRole.Credentials.SecretAccessKey);
+      core.setSecret(assumedRole.Credentials.SessionToken);
+    }
   }
 }

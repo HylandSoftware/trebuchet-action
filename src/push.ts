@@ -2,7 +2,6 @@ import * as aws from 'aws-sdk';
 import * as core from '@actions/core';
 import * as docker from './docker';
 import * as ecrHelper from './ecr';
-
 export class Push {
   constructor(
     readonly ecrClient: aws.ECR,
@@ -35,21 +34,28 @@ export class Push {
         })
         .promise();
     } catch (err) {
-      if (err.code === 'RepositoryNotFoundException') {
-        const createRepoOptions: aws.ECR.Types.CreateRepositoryRequest = {
-          repositoryName: repository,
-          imageTagMutability: immutable ? 'IMMUTABLE' : 'MUTABLE',
-        };
-        core.debug(
-          `Repository doesn't exist, creating with ${JSON.stringify(
-            createRepoOptions
-          )}`
-        );
-        await this.ecrClient.createRepository(createRepoOptions).promise();
+      const e = err as aws.AWSError;
+      if (e) {
+        if (e.code === 'RepositoryNotFoundException') {
+          const createRepoOptions: aws.ECR.Types.CreateRepositoryRequest = {
+            repositoryName: repository,
+            imageTagMutability: immutable ? 'IMMUTABLE' : 'MUTABLE',
+          };
+          core.debug(
+            `Repository doesn't exist, creating with ${JSON.stringify(
+              createRepoOptions
+            )}`
+          );
+          await this.ecrClient.createRepository(createRepoOptions).promise();
+        } else {
+          core.setFailed(
+            `Error testing for repository existence: ${e.message}`
+          );
+        }
+      } else if (err instanceof Error) {
+        core.setFailed(`Error with create repository: ${err.message}`);
       } else {
-        core.setFailed(
-          `Error testing for repository existence: ${err.message}`
-        );
+        core.setFailed(`Unknown error with create repository: ${err}`)
       }
     }
   }
