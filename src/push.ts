@@ -55,7 +55,7 @@ export class Push {
       } else if (err instanceof Error) {
         core.setFailed(`Error with create repository: ${err.message}`);
       } else {
-        core.setFailed(`Unknown error with create repository: ${err}`)
+        core.setFailed(`Unknown error with create repository: ${err}`);
       }
     }
   }
