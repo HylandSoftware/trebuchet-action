@@ -1,3 +1,17 @@
+# [2.0.0](https://github.com/HylandSoftware/trebuchet-action/compare/v1.2.0...v2.0.0) (2023-04-26)
+
+
+### Features
+
+* upgrade to node 16 before node12 is completely disabled ([#528](https://github.com/HylandSoftware/trebuchet-action/issues/528)) ([8b15cb1](https://github.com/HylandSoftware/trebuchet-action/commit/8b15cb11a3e5f23c90977f7217cdaf99bb9b9b92))
+
+
+### BREAKING CHANGES
+
+* Updating to node16 should be happening anyway; and
+being forced by GitHub but updating to this version should also be
+part of a planned upgrade and not an auto-process via dependabot.
+
 # [1.2.0](https://github.com/HylandSoftware/trebuchet-action/compare/v1.1.0...v1.2.0) (2021-03-31)
 
 
