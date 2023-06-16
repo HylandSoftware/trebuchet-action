@@ -16,7 +16,7 @@ async function run(): Promise<void> {
     const sourceRoleArn = core.getInput('source-role-arn');
     const immutable: boolean =
       (core.getInput('immutable', { required: false }) || 'false') === 'true';
-    const ecrClient = new ECR();
+    const ecrClient = new ECR({});
 
     if (repository === undefined || repository.length === 0) {
       core.setFailed('Repository parameter is missing');
