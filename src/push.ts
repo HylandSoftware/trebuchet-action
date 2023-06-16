@@ -1,5 +1,8 @@
-import * as aws from 'aws-sdk';
-import { ECR } from "@aws-sdk/client-ecr";
+import { 
+  ECR, 
+  DescribeRepositoriesCommand,
+  CreateRepositoryCommand,
+  RepositoryNotFoundException } from "@aws-sdk/client-ecr";
 import * as core from '@actions/core';
 import * as docker from './docker';
 import * as ecrHelper from './ecr';
@@ -27,36 +30,30 @@ export class Push {
     repository: string,
     immutable: boolean
   ): Promise<void> {
+    const command = new DescribeRepositoriesCommand({
+      repositoryNames: [repository]
+    });
+
     try {
       core.debug('Checking repository exists.');
       await this.ecrClient
-        .describeRepositories({
-          repositoryNames: [repository],
-        })
-        .promise();
+        .send(command);
     } catch (err) {
-      const e = err as aws.AWSError;
-      if (e) {
-        if (e.code === 'RepositoryNotFoundException') {
-          const createRepoOptions: aws.ECR.Types.CreateRepositoryRequest = {
-            repositoryName: repository,
-            imageTagMutability: immutable ? 'IMMUTABLE' : 'MUTABLE',
-          };
-          core.debug(
-            `Repository doesn't exist, creating with ${JSON.stringify(
-              createRepoOptions
-            )}`
-          );
-          await this.ecrClient.createRepository(createRepoOptions).promise();
-        } else {
-          core.setFailed(
-            `Error testing for repository existence: ${e.message}`
-          );
-        }
+      if (err instanceof RepositoryNotFoundException) {
+        const command = new CreateRepositoryCommand({
+          repositoryName: repository,
+          imageTagMutability: immutable ? 'IMMUTABLE' : 'MUTABLE',
+        });
+        core.debug(
+          `Repository doesn't exist, creating with ${JSON.stringify(
+            command
+          )}`
+        );
+        await this.ecrClient.send(command);
       } else if (err instanceof Error) {
-        core.setFailed(`Error with create repository: ${err.message}`);
+      core.setFailed(`Error with create repository: ${err.message}`);
       } else {
-        core.setFailed(`Unknown error with create repository: ${err}`);
+      core.setFailed(`Unknown error with create repository: ${err}`);
       }
     }
   }

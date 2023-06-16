@@ -1,5 +1,5 @@
 import { ECR } from "@aws-sdk/client-ecr";
-import AWS_STS, { STS, GetCallerIdentityCommand, AssumeRoleCommand } from "@aws-sdk/client-sts";
+import { STS, GetCallerIdentityCommand, AssumeRoleCommand } from "@aws-sdk/client-sts";
 import * as core from '@actions/core';
 import { Pull } from './pull';
 import { Push } from './push';
