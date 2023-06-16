@@ -1,5 +1,5 @@
 import { ECR } from "@aws-sdk/client-ecr";
-import AWS_STS, { STS } from "@aws-sdk/client-sts";
+import AWS_STS, { STS, GetCallerIdentityCommand, AssumeRoleCommand } from "@aws-sdk/client-sts";
 import * as core from '@actions/core';
 import { Pull } from './pull';
 import { Push } from './push';
@@ -16,8 +16,9 @@ export class Copy {
 
   async execute(): Promise<void> {
     // role switch && log in to source environment
-    const sts = new STS();
-    const currentIdentity = await sts.getCallerIdentity();
+    const sts = new STS({});
+    const command = new GetCallerIdentityCommand({})
+    const currentIdentity = await sts.send(command);
     core.debug(`current identity: ${JSON.stringify(currentIdentity)}`);
 
     if (
@@ -49,43 +50,45 @@ export class Copy {
   }
 
   private async PullSourcePackage(sts: STS): Promise<void> {
-    const assumedRole = await sts
-      .assumeRole({
-        RoleArn: this.sourceAccountRole,
-        RoleSessionName: 'awssdk-github-action',
-      });
-
-    if (assumedRole === undefined || assumedRole.Credentials === undefined) {
-      throw new Error(`Role assumption failed ${assumedRole.$response.error}`);
-    }
-
-    core.debug(`role assumption response: ${assumedRole.AssumedRoleUser?.Arn}`);
-    this.maskSecrets(assumedRole);
-    const ecrPullClient = new ECR({
-      credentials: {
-        accessKeyId: assumedRole.Credentials.AccessKeyId,
-        expireTime: assumedRole.Credentials.Expiration,
-        secretAccessKey: assumedRole.Credentials.SecretAccessKey,
-        sessionToken: assumedRole.Credentials.SessionToken,
-      },
+    const command = new AssumeRoleCommand({
+      RoleArn: this.sourceAccountRole,
+      RoleSessionName: 'awssdk-github-action'
     });
 
-    const pull = new Pull(
-      ecrPullClient,
-      this.repository,
-      this.tag,
-      this.sourceAccountId,
-      true
-    );
+    try {
+      const assumedRole = await sts.send(command)
+      core.debug(`role assumption response: ${assumedRole.AssumedRoleUser?.Arn}`);
+      const accessKeyId = assumedRole.Credentials?.AccessKeyId ?? "";
+      const secretAccessKey = assumedRole.Credentials?.SecretAccessKey ?? "";
+      const sessionToken = assumedRole.Credentials?.SessionToken ?? "";
+      
+      // Mask secrets
+      if (assumedRole.Credentials) {
+        core.setSecret(accessKeyId);
+        core.setSecret(secretAccessKey);
+        core.setSecret(sessionToken); 
+      }
+      const ecrPullClient = new ECR({
+        credentials: {
+          accessKeyId: accessKeyId,
+          secretAccessKey: secretAccessKey,
+          sessionToken: sessionToken,
+        },
+      });
 
-    await pull.execute();
-  }
+      const pull = new Pull(
+        ecrPullClient,
+        this.repository,
+        this.tag,
+        this.sourceAccountId,
+        true
+      );
 
-  private maskSecrets(assumedRole: AWS_STS.AssumeRoleCommandOutput): void {
-    if (assumedRole.Credentials) {
-      core.setSecret(assumedRole.Credentials.AccessKeyId);
-      core.setSecret(assumedRole.Credentials.SecretAccessKey);
-      core.setSecret(assumedRole.Credentials.SessionToken);
+      await pull.execute();
+    } catch (error) {
+        throw new Error(`Role assumption failed ${error}`);
     }
+
+
   }
 }
