@@ -1,4 +1,4 @@
-import { ECR, GetAuthorizationTokenCommandInput } from "@aws-sdk/client-ecr";
+import { ECR } from "@aws-sdk/client-ecr";
 import * as core from '@actions/core';
 import * as docker from './docker';
 
@@ -7,13 +7,8 @@ export async function login(
   accountId?: string
 ): Promise<string> {
   core.debug(`getting ECR auth token with account id ${accountId}`);
-
-  const authTokenRequest: GetAuthorizationTokenCommandInput = {};
-  if (accountId !== undefined) {
-    authTokenRequest.registryIds = [accountId];
-  }
   const authTokenResponse = await ecrClient
-    .getAuthorizationToken(authTokenRequest);
+    .getAuthorizationToken({});
 
   if (
     authTokenResponse.authorizationData === undefined ||
