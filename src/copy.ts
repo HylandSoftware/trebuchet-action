@@ -70,9 +70,9 @@ export class Copy {
       }
       const ecrPullClient = new ECR({
         credentials: {
-          accessKeyId: accessKeyId,
-          secretAccessKey: secretAccessKey,
-          sessionToken: sessionToken,
+          accessKeyId,
+          secretAccessKey,
+          sessionToken,
         },
       });
 

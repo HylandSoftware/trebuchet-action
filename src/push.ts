@@ -30,26 +30,26 @@ export class Push {
     repository: string,
     immutable: boolean
   ): Promise<void> {
-    const command = new DescribeRepositoriesCommand({
+    const describeRepositories = new DescribeRepositoriesCommand({
       repositoryNames: [repository]
     });
 
     try {
       core.debug('Checking repository exists.');
       await this.ecrClient
-        .send(command);
+        .send(describeRepositories);
     } catch (err) {
       if (err instanceof RepositoryNotFoundException) {
-        const command = new CreateRepositoryCommand({
+        const createRepository = new CreateRepositoryCommand({
           repositoryName: repository,
           imageTagMutability: immutable ? 'IMMUTABLE' : 'MUTABLE',
         });
         core.debug(
           `Repository doesn't exist, creating with ${JSON.stringify(
-            command
+            createRepository
           )}`
         );
-        await this.ecrClient.send(command);
+        await this.ecrClient.send(createRepository);
       } else if (err instanceof Error) {
       core.setFailed(`Error with create repository: ${err.message}`);
       } else {
