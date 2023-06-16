@@ -1,20 +1,19 @@
-import * as aws from 'aws-sdk';
+import AWS_ECR, { ECR } from "@aws-sdk/client-ecr";
 import * as core from '@actions/core';
 import * as docker from './docker';
 
 export async function login(
-  ecrClient: aws.ECR,
+  ecrClient: ECR,
   accountId?: string
 ): Promise<string> {
   core.debug(`getting ECR auth token with account id ${accountId}`);
 
-  const authTokenRequest: aws.ECR.GetAuthorizationTokenRequest = {};
+  const authTokenRequest: AWS_ECR.GetAuthorizationTokenCommandInput = {};
   if (accountId !== undefined) {
     authTokenRequest.registryIds = [accountId];
   }
   const authTokenResponse = await ecrClient
-    .getAuthorizationToken(authTokenRequest)
-    .promise();
+    .getAuthorizationToken(authTokenRequest);
 
   if (
     authTokenResponse.authorizationData === undefined ||

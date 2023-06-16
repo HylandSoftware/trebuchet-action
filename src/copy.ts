@@ -1,11 +1,12 @@
-import * as aws from 'aws-sdk';
+import { ECR } from "@aws-sdk/client-ecr";
+import AWS_STS, { STS } from "@aws-sdk/client-sts";
 import * as core from '@actions/core';
 import { Pull } from './pull';
 import { Push } from './push';
 
 export class Copy {
   constructor(
-    readonly ecrClient: aws.ECR,
+    readonly ecrClient: ECR,
     readonly sourceAccountRole: string,
     readonly sourceAccountId: string,
     readonly repository: string,
@@ -15,8 +16,8 @@ export class Copy {
 
   async execute(): Promise<void> {
     // role switch && log in to source environment
-    const sts = new aws.STS();
-    const currentIdentity = await sts.getCallerIdentity().promise();
+    const sts = new STS();
+    const currentIdentity = await sts.getCallerIdentity();
     core.debug(`current identity: ${JSON.stringify(currentIdentity)}`);
 
     if (
@@ -47,13 +48,12 @@ export class Copy {
     await push.execute();
   }
 
-  private async PullSourcePackage(sts: aws.STS): Promise<void> {
+  private async PullSourcePackage(sts: STS): Promise<void> {
     const assumedRole = await sts
       .assumeRole({
         RoleArn: this.sourceAccountRole,
         RoleSessionName: 'awssdk-github-action',
-      })
-      .promise();
+      });
 
     if (assumedRole === undefined || assumedRole.Credentials === undefined) {
       throw new Error(`Role assumption failed ${assumedRole.$response.error}`);
@@ -61,7 +61,7 @@ export class Copy {
 
     core.debug(`role assumption response: ${assumedRole.AssumedRoleUser?.Arn}`);
     this.maskSecrets(assumedRole);
-    const ecrPullClient = new aws.ECR({
+    const ecrPullClient = new ECR({
       credentials: {
         accessKeyId: assumedRole.Credentials.AccessKeyId,
         expireTime: assumedRole.Credentials.Expiration,
@@ -81,7 +81,7 @@ export class Copy {
     await pull.execute();
   }
 
-  private maskSecrets(assumedRole: aws.STS.AssumeRoleResponse): void {
+  private maskSecrets(assumedRole: AWS_STS.AssumeRoleCommandOutput): void {
     if (assumedRole.Credentials) {
       core.setSecret(assumedRole.Credentials.AccessKeyId);
       core.setSecret(assumedRole.Credentials.SecretAccessKey);

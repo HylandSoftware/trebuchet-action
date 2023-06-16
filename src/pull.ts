@@ -1,11 +1,11 @@
-import * as aws from 'aws-sdk';
+import { ECR } from "@aws-sdk/client-ecr";
 import * as core from '@actions/core';
 import * as docker from './docker';
 import * as ecrHelper from './ecr';
 
 export class Pull {
   constructor(
-    readonly ecrClient: aws.ECR,
+    readonly ecrClient: ECR,
     readonly repository: string,
     readonly tag: string,
     readonly accountId?: string,
