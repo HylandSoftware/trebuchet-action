@@ -30,7 +30,7 @@
     "@aws-sdk/client-ecr": "^3.353.0",
     "@aws-sdk/client-sts": "^3.353.0",
     "dockerode": "^3.3.5",
-    "whatwg-url": "^12.0.1"
+    "whatwg-url": "^13.0.0"
   },
   "devDependencies": {
     "@types/jest": "^29.5.1",
