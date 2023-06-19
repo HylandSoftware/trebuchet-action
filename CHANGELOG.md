@@ -1,3 +1,10 @@
+# [2.2.0](https://github.com/HylandSoftware/trebuchet-action/compare/v2.1.0...v2.2.0) (2023-06-19)
+
+
+### Features
+
+* updated dist and package.json to solve deprecation warning ([#558](https://github.com/HylandSoftware/trebuchet-action/issues/558)) ([f74f614](https://github.com/HylandSoftware/trebuchet-action/commit/f74f6149c56aa96c07f36c3531961dd1dc7401f5))
+
 # [2.0.0](https://github.com/HylandSoftware/trebuchet-action/compare/v1.2.0...v2.0.0) (2023-04-26)
 
 
