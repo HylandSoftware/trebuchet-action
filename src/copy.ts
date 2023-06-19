@@ -1,5 +1,9 @@
-import { ECR } from "@aws-sdk/client-ecr";
-import { STS, GetCallerIdentityCommand, AssumeRoleCommand } from "@aws-sdk/client-sts";
+import { ECR } from '@aws-sdk/client-ecr';
+import {
+  STS,
+  GetCallerIdentityCommand,
+  AssumeRoleCommand,
+} from '@aws-sdk/client-sts';
 import * as core from '@actions/core';
 import { Pull } from './pull';
 import { Push } from './push';
@@ -17,7 +21,7 @@ export class Copy {
   async execute(): Promise<void> {
     // role switch && log in to source environment
     const sts = new STS({});
-    const command = new GetCallerIdentityCommand({})
+    const command = new GetCallerIdentityCommand({});
     const currentIdentity = await sts.send(command);
     core.debug(`current identity: ${JSON.stringify(currentIdentity)}`);
 
@@ -52,21 +56,23 @@ export class Copy {
   private async PullSourcePackage(sts: STS): Promise<void> {
     const command = new AssumeRoleCommand({
       RoleArn: this.sourceAccountRole,
-      RoleSessionName: 'awssdk-github-action'
+      RoleSessionName: 'awssdk-github-action',
     });
 
     try {
-      const assumedRole = await sts.send(command)
-      core.debug(`role assumption response: ${assumedRole.AssumedRoleUser?.Arn}`);
-      const accessKeyId = assumedRole.Credentials?.AccessKeyId ?? "";
-      const secretAccessKey = assumedRole.Credentials?.SecretAccessKey ?? "";
-      const sessionToken = assumedRole.Credentials?.SessionToken ?? "";
-      
+      const assumedRole = await sts.send(command);
+      core.debug(
+        `role assumption response: ${assumedRole.AssumedRoleUser?.Arn}`
+      );
+      const accessKeyId = assumedRole.Credentials?.AccessKeyId ?? '';
+      const secretAccessKey = assumedRole.Credentials?.SecretAccessKey ?? '';
+      const sessionToken = assumedRole.Credentials?.SessionToken ?? '';
+
       // Mask secrets
       if (assumedRole.Credentials) {
         core.setSecret(accessKeyId);
         core.setSecret(secretAccessKey);
-        core.setSecret(sessionToken); 
+        core.setSecret(sessionToken);
       }
       const ecrPullClient = new ECR({
         credentials: {
@@ -86,9 +92,7 @@ export class Copy {
 
       await pull.execute();
     } catch (error) {
-        throw new Error(`Role assumption failed ${error}`);
+      throw new Error(`Role assumption failed ${error}`);
     }
-
-
   }
 }

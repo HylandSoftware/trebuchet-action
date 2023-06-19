@@ -1,4 +1,4 @@
-import { ECR } from "@aws-sdk/client-ecr";
+import { ECR } from '@aws-sdk/client-ecr';
 import * as core from '@actions/core';
 import { Copy } from './copy';
 import { Push } from './push';
