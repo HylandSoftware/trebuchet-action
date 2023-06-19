@@ -1,8 +1,9 @@
-import { 
-  ECR, 
+import {
+  ECR,
   DescribeRepositoriesCommand,
   CreateRepositoryCommand,
-  RepositoryNotFoundException } from "@aws-sdk/client-ecr";
+  RepositoryNotFoundException,
+} from '@aws-sdk/client-ecr';
 import * as core from '@actions/core';
 import * as docker from './docker';
 import * as ecrHelper from './ecr';
@@ -31,13 +32,12 @@ export class Push {
     immutable: boolean
   ): Promise<void> {
     const describeRepositories = new DescribeRepositoriesCommand({
-      repositoryNames: [repository]
+      repositoryNames: [repository],
     });
 
     try {
       core.debug('Checking repository exists.');
-      await this.ecrClient
-        .send(describeRepositories);
+      await this.ecrClient.send(describeRepositories);
     } catch (err) {
       if (err instanceof RepositoryNotFoundException) {
         const createRepository = new CreateRepositoryCommand({
@@ -51,9 +51,9 @@ export class Push {
         );
         await this.ecrClient.send(createRepository);
       } else if (err instanceof Error) {
-      core.setFailed(`Error with create repository: ${err.message}`);
+        core.setFailed(`Error with create repository: ${err.message}`);
       } else {
-      core.setFailed(`Unknown error with create repository: ${err}`);
+        core.setFailed(`Unknown error with create repository: ${err}`);
       }
     }
   }
