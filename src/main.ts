@@ -5,7 +5,7 @@ import { Push } from './push';
 // import { Pull } from './pull';
 
 async function run(): Promise<void> {
-  process.on('warning', e => console.warn(e.stack))
+  process.on('warning', e => core.debug(e.stack ?? ""))
   try {
     //const strip: boolean = (core.getInput("strip", { required: false }) || "false") === "true";
     //const region: string = core.getInput('region');
