@@ -17,12 +17,9 @@ inputs:
     required: false
     description: 'The role arn to use when pulling the image from ECR.  Only needed when the source role is different from the default environment credentials.'
     default: ''
-  repository: 
+  images: 
     required: true
-    description: 'The name of the image in either the local docker or remote registry.'
-  tag: 
-    required: true
-    description: 'The tag of the image to use when performing the action'
+    description: 'A comma-seperated list of images in the format of repository:tag.'
   immutable:
     required: false
     description: 'Whether the repository should be created as IMMUTABLE (if not already existing)'
