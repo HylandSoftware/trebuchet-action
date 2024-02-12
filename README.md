@@ -26,11 +26,27 @@ The purpose of Trebuchet is to improve the quality of life for pushing Docker im
           repository: ${{ secrets.REPOSITORY }}
           tag: ${{ secrets.TAG }}
 ```
+or, if uploading multiple images at the same time
+
+```
+      - uses: HylandSoftware/trebuchet-action@v1
+        with:
+          action: copy
+          source-account-id: ${{ secrets.SOURCE_ACCOUNT_ID }}
+          source-role-arn: ${{ secrets.SOURCE_ROLE }}
+          tag: ${{ secrets.TAG }}
+          repositories: | 
+            ${{ secrets.REPOSITORY1 }}
+            ${{ secrets.REPOSITORY2 }}
+            ${{ secrets.REPOSITORY3 }}
+          
+```
 
 | Paramater | Required | Default | Description |
 | ---------- | ------- | ------- | ----------- |
 | action | true | n/a | The command to execute, `push` or `copy` are the currently supported actions. |
-| repository | true | n/a | The name of the image in either the local docker or remote registry. |
+| repository | false | n/a | The name of the image in either the local docker or remote registry. Mutually exclusive with repositories. |
+| repositories | false | n/a | The names of the images in either the local docker or remote registry separated by a new line.  Mutually exclusive with repository. |
 | tag | true | n/a | The tag of the image to use when performing the action. |
 | region | false | ENV_VAR | The AWS region to execute against.  It will use this property or pull from the AWS_DEFAULT_REGION Environment variable. |
 | source-account-id | false | CURRENT_ACCOUNT | The account id of the source AWS account for a pull / copy, if different than the default account id. |

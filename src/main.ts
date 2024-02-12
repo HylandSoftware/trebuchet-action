@@ -10,7 +10,8 @@ async function run(): Promise<void> {
     //const region: string = core.getInput('region');
 
     const action: string = core.getInput('action');
-    const repository: string = core.getInput('repository');
+    const repositoryInput: string = core.getInput('repository');
+    const repositoriesInput: string = core.getInput('repositories');
     const tag: string = core.getInput('tag');
     const sourceAccountId = core.getInput('source-account-id');
     const sourceRoleArn = core.getInput('source-role-arn');
@@ -18,8 +19,16 @@ async function run(): Promise<void> {
       (core.getInput('immutable', { required: false }) || 'false') === 'true';
     const ecrClient = new ECR({});
 
-    if (repository === undefined || repository.length === 0) {
-      core.setFailed('Repository parameter is missing');
+    if (repositoryInput !== undefined && repositoriesInput !== undefined) {
+      core.setFailed('Repository and Repositories cannot both be set.');
+      return;
+    }
+
+    if (
+      (repositoryInput === undefined || repositoryInput.length === 0) &&
+      (repositoriesInput === undefined || repositoriesInput.length === 0)
+    ) {
+      core.setFailed('Repository or Repositories parameter is required');
       return;
     }
 
@@ -28,10 +37,23 @@ async function run(): Promise<void> {
       return;
     }
 
+    let repositories;
+
+    if (repositoryInput !== undefined && repositoryInput.length > 0) {
+      repositories = [repositoryInput];
+    } else {
+      repositories = repositoriesInput.split(/\r\n|\r|\n/g);
+      if (repositories === undefined || repositories.length === 0) {
+        core.setFailed('Repositories parameter is set to an invalid value');
+      }
+    }
+
     switch (action) {
       case 'push': {
-        const push = new Push(ecrClient, repository, tag, immutable);
-        await push.execute();
+        for (const repository of repositories) {
+          const push = new Push(ecrClient, repository, tag, immutable);
+          await push.execute();
+        }
         break;
       }
       //case 'pull': {
@@ -40,15 +62,17 @@ async function run(): Promise<void> {
       //  break;
       //}
       case 'copy': {
-        const promote = new Copy(
-          ecrClient,
-          sourceRoleArn,
-          sourceAccountId,
-          repository,
-          tag,
-          immutable
-        );
-        await promote.execute();
+        for (const repository of repositories) {
+          const promote = new Copy(
+            ecrClient,
+            sourceRoleArn,
+            sourceAccountId,
+            repository,
+            tag,
+            immutable
+          );
+          await promote.execute();
+        }
         break;
       }
       default: {
