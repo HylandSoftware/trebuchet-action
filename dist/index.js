@@ -82,14 +82,14 @@ class Copy {
         return __awaiter(this, void 0, void 0, function* () {
             const command = new client_sts_1.AssumeRoleCommand({
                 RoleArn: this.sourceAccountRole,
-                RoleSessionName: 'awssdk-github-action'
+                RoleSessionName: 'awssdk-github-action',
             });
             try {
                 const assumedRole = yield sts.send(command);
                 core.debug(`role assumption response: ${(_a = assumedRole.AssumedRoleUser) === null || _a === void 0 ? void 0 : _a.Arn}`);
-                const accessKeyId = (_c = (_b = assumedRole.Credentials) === null || _b === void 0 ? void 0 : _b.AccessKeyId) !== null && _c !== void 0 ? _c : "";
-                const secretAccessKey = (_e = (_d = assumedRole.Credentials) === null || _d === void 0 ? void 0 : _d.SecretAccessKey) !== null && _e !== void 0 ? _e : "";
-                const sessionToken = (_g = (_f = assumedRole.Credentials) === null || _f === void 0 ? void 0 : _f.SessionToken) !== null && _g !== void 0 ? _g : "";
+                const accessKeyId = (_c = (_b = assumedRole.Credentials) === null || _b === void 0 ? void 0 : _b.AccessKeyId) !== null && _c !== void 0 ? _c : '';
+                const secretAccessKey = (_e = (_d = assumedRole.Credentials) === null || _d === void 0 ? void 0 : _d.SecretAccessKey) !== null && _e !== void 0 ? _e : '';
+                const sessionToken = (_g = (_f = assumedRole.Credentials) === null || _f === void 0 ? void 0 : _f.SessionToken) !== null && _g !== void 0 ? _g : '';
                 // Mask secrets
                 if (assumedRole.Credentials) {
                     core.setSecret(accessKeyId);
@@ -266,8 +266,7 @@ const docker = __importStar(__nccwpck_require__(3758));
 function login(ecrClient, accountId) {
     return __awaiter(this, void 0, void 0, function* () {
         core.debug(`getting ECR auth token with account id ${accountId}`);
-        const authTokenResponse = yield ecrClient
-            .getAuthorizationToken({});
+        const authTokenResponse = yield ecrClient.getAuthorizationToken({});
         if (authTokenResponse.authorizationData === undefined ||
             !Array.isArray(authTokenResponse.authorizationData) ||
             !authTokenResponse.authorizationData.length ||
@@ -340,24 +339,42 @@ function run() {
             //const strip: boolean = (core.getInput("strip", { required: false }) || "false") === "true";
             //const region: string = core.getInput('region');
             const action = core.getInput('action');
-            const repository = core.getInput('repository');
+            const repositoryInput = core.getInput('repository');
+            const repositoriesInput = core.getInput('repositories');
             const tag = core.getInput('tag');
             const sourceAccountId = core.getInput('source-account-id');
             const sourceRoleArn = core.getInput('source-role-arn');
             const immutable = (core.getInput('immutable', { required: false }) || 'false') === 'true';
             const ecrClient = new client_ecr_1.ECR({});
-            if (repository === undefined || repository.length === 0) {
-                core.setFailed('Repository parameter is missing');
+            if (repositoryInput !== undefined && repositoriesInput !== undefined) {
+                core.setFailed('Repository and Repositories cannot both be set.');
+                return;
+            }
+            if ((repositoryInput === undefined || repositoryInput.length === 0) &&
+                (repositoriesInput === undefined || repositoriesInput.length === 0)) {
+                core.setFailed('Repository or Repositories parameter is required');
                 return;
             }
             if (tag === undefined || tag.length === 0) {
                 core.setFailed('Tag parameter is missing');
                 return;
             }
+            let repositories;
+            if (repositoryInput !== undefined && repositoryInput.length > 0) {
+                repositories = [repositoryInput];
+            }
+            else {
+                repositories = repositoriesInput.split(/\r\n|\r|\n/g);
+                if (repositories === undefined || repositories.length === 0) {
+                    core.setFailed('Repositories parameter is set to an invalid value');
+                }
+            }
             switch (action) {
                 case 'push': {
-                    const push = new push_1.Push(ecrClient, repository, tag, immutable);
-                    yield push.execute();
+                    for (const repository of repositories) {
+                        const push = new push_1.Push(ecrClient, repository, tag, immutable);
+                        yield push.execute();
+                    }
                     break;
                 }
                 //case 'pull': {
@@ -366,8 +383,10 @@ function run() {
                 //  break;
                 //}
                 case 'copy': {
-                    const promote = new copy_1.Copy(ecrClient, sourceRoleArn, sourceAccountId, repository, tag, immutable);
-                    yield promote.execute();
+                    for (const repository of repositories) {
+                        const promote = new copy_1.Copy(ecrClient, sourceRoleArn, sourceAccountId, repository, tag, immutable);
+                        yield promote.execute();
+                    }
                     break;
                 }
                 default: {
@@ -528,12 +547,11 @@ class Push {
     createRepository(repository, immutable) {
         return __awaiter(this, void 0, void 0, function* () {
             const describeRepositories = new client_ecr_1.DescribeRepositoriesCommand({
-                repositoryNames: [repository]
+                repositoryNames: [repository],
             });
             try {
                 core.debug('Checking repository exists.');
-                yield this.ecrClient
-                    .send(describeRepositories);
+                yield this.ecrClient.send(describeRepositories);
             }
             catch (err) {
                 if (err instanceof client_ecr_1.RepositoryNotFoundException) {
