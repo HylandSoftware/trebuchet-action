@@ -32,5 +32,5 @@ outputs:
     description: 'The URI of the ECR registry i.e. aws_account_id.dkr.ecr.region.amazonaws.com'
 
 runs:
-  using: 'node16'
+  using: 'node20'
   main: 'dist/index.js'
