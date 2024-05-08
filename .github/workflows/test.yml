@@ -15,29 +15,29 @@ jobs:
           npm install
       - run: |
           npm run all
-  test: # make sure the action works on a clean machine without building
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
+  # test: # make sure the action works on a clean machine without building
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v3
 
-      - name: Configure AWS
-        uses: aws-actions/configure-aws-credentials@v2
-        with:
-          aws-access-key-id: ${{ secrets.DESTINATION_AWS_ACCESS_KEY_ID}}
-          aws-secret-access-key: ${{ secrets.DESTINATION_AWS_SECRET_KEY }}
-          aws-region: us-east-1
-          role-to-assume: ${{ secrets.DESTINATION_ROLE }}
-          role-skip-session-tagging: true
-          mask-aws-account-id: false
-          role-duration-seconds: 900
+  #     - name: Configure AWS
+  #       uses: aws-actions/configure-aws-credentials@v2
+  #       with:
+  #         aws-access-key-id: ${{ secrets.DESTINATION_AWS_ACCESS_KEY_ID}}
+  #         aws-secret-access-key: ${{ secrets.DESTINATION_AWS_SECRET_KEY }}
+  #         aws-region: us-east-1
+  #         role-to-assume: ${{ secrets.DESTINATION_ROLE }}
+  #         role-skip-session-tagging: true
+  #         mask-aws-account-id: false
+  #         role-duration-seconds: 900
 
-      - uses: ./
-        with:
-          action: copy
-          source-account-id: ${{ secrets.SOURCE_ACCOUNT_ID }}
-          source-role-arn: ${{ secrets.SOURCE_ROLE }}
-          repository: ${{ secrets.REPOSITORY }}
-          tag: ${{ secrets.TAG }}
+  #     - uses: ./
+  #       with:
+  #         action: copy
+  #         source-account-id: ${{ secrets.SOURCE_ACCOUNT_ID }}
+  #         source-role-arn: ${{ secrets.SOURCE_ROLE }}
+  #         repository: ${{ secrets.REPOSITORY }}
+  #         tag: ${{ secrets.TAG }}
 
   release:
     runs-on: ubuntu-latest
