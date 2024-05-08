@@ -1,3 +1,16 @@
+# [3.0.0](https://github.com/HylandSoftware/trebuchet-action/compare/v2.2.0...v3.0.0) (2024-05-08)
+
+
+### Features
+
+* update to node20 for runtime ([#574](https://github.com/HylandSoftware/trebuchet-action/issues/574)) ([84d1596](https://github.com/HylandSoftware/trebuchet-action/commit/84d1596e08fdc64ee99e20400aa711ae93410fbb))
+
+
+### BREAKING CHANGES
+
+* Mark as breaking change for the
+node 20 upgrade just in case there's some odd dependency somewhere.
+
 # [2.2.0](https://github.com/HylandSoftware/trebuchet-action/compare/v2.1.0...v2.2.0) (2023-06-19)
 
 
